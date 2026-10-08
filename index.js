@@ -12,7 +12,7 @@ export const Config = z.object({
   proxyUrl: z.string().default('http://127.0.0.1:21158').volatile(),
 });
 const KEY = 'llm-pi-ai/openai-codex';
-const CHANNEL = '/chatgpt-subscription';
+const ENDPOINTS = ['status', 'login', 'cancel', 'settings', 'select-model'];
 
 export function browserCommand(url, network, home = process.env.DSH_HOME || join(homedir(), '.dsh')) {
   const parsed = new URL(url);
@@ -125,8 +125,7 @@ export function apply(ctx, config) {
   };
 
   ctx.effect(() => () => login?.abort(), 'ChatGPT subscription: cancel pending login on unload');
-  ctx.inject(['connection'], connected => {
-    connected.connection.rpc.handle(CHANNEL, async (endpoint, payload) => {
+  const dispatch = async (endpoint, payload) => {
       try {
         if (endpoint === 'status') return { ok: true, value: await status() };
         if (endpoint === 'login') startLogin();
@@ -151,6 +150,18 @@ export function apply(ctx, config) {
           ? error.message : '操作失败，请检查 DSH 配置或网络后重试。';
         return { ok: false, error: { code: 'chatgpt/operation-failed', message: safeMessage, details: {} } };
       }
+  };
+  // This release's generic rpc.handle reads webServer from a Context that did
+  // not inject it. Exact routes use the existing authenticated /api carrier.
+  ctx.inject(['connection'], connected => {
+    for (const endpoint of ENDPOINTS) connected.connection.fetch.register({
+      path: '/api/chatgpt-subscription.' + endpoint, methods: ['POST'],
+      async fetch(request) {
+        const message = await request.json();
+        if (message.type !== 'client-request' || typeof message.rpcId !== 'string' ||
+            message.method !== 'chatgpt-subscription.' + endpoint) return new Response('invalid request', { status: 400 });
+        return Response.json({ type: 'server-response', rpcId: message.rpcId, result: await dispatch(endpoint, message.payload) });
+      },
     });
   });
 }

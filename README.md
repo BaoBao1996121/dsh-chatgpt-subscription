@@ -17,13 +17,13 @@ DeepSeek Harness 的 ChatGPT 订阅登录与网络设置插件。采用 MIT 许�
 下载 [GitHub Release](https://github.com/BaoBao1996121/dsh-chatgpt-subscription/releases) 中的 `.tgz`，在 DSH 的插件管理中输入下载文件的绝对路径进行安装，或运行：
 
 ```sh
-dsh plugin --profile desktop add /absolute/path/dsh-chatgpt-subscription-0.1.2.tgz
+dsh plugin --profile desktop add /absolute/path/dsh-chatgpt-subscription-0.1.3.tgz
 ```
 
 也可以从 GitHub 安装固定版本：
 
 ```sh
-dsh plugin --profile desktop add github:BaoBao1996121/dsh-chatgpt-subscription#v0.1.2
+dsh plugin --profile desktop add github:BaoBao1996121/dsh-chatgpt-subscription#v0.1.3
 ```
 
 安装后重启 DSH。打开 **设置 → ChatGPT 订阅**：
@@ -53,7 +53,7 @@ dsh plugin --profile desktop add github:BaoBao1996121/dsh-chatgpt-subscription#v
 
 这是一个标准 `dsh.bundle`，附带 Host 和 Client 插件入口。
 
-- 通过原生 Connection RPC 注册受 DSH 身份验证保护的设置操作。
+- 通过原生 Connection 的 `/api` 精确路由承载 RPC，所有设置操作由 DSH 身份验证保护。
 - 通过 `settings.section` 插槽增加设置页。
 - 对 `auth.openai.com` 和 `chatgpt.com` 的 HTTPS fetch 请求设置显式 Undici dispatcher；其他域名保持原路径。卸载时还原该 hook。
 - DSH 内置 Codex WebSocket 路径不接受这个 fetch dispatcher，因此插件将 `llm-pi-ai.providers.openai-codex.transport` 持久设置为 `sse`，并补充模型目录。保留其他 provider 与已有模型字段。
@@ -73,6 +73,8 @@ npm pack
 ```
 
 测试覆盖 OpenAI 域名匹配、直连与代理 dispatcher、其他域名隔离、卸载还原，以及真实 Cordis Context 中的凭据状态投影与错误处理。真实登录与模型请求使用本机 DSH 发布版验收，仓库不包含账户凭据或本机登录数据。
+
+发布版的真实组合验收还确认了：匿名设置请求返回 HTTP 401；已有 OAuth 登录能被读取；直连和 Clash 设置都能保存；主 Agent 默认模型可切换为 `gpt-6.1-sol`。模型请求已返回预期验证文本。桌面窗口的按钮布局仍需用户重启后确认。
 
 ## 插件目录
 

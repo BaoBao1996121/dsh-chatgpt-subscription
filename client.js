@@ -59,7 +59,7 @@ window.__ModuleLoader__.load({
     }
     function apply(ctx) {
       const call = async (endpoint, payload = {}) => {
-        const result = await ctx.connection.rpc.call('/chatgpt-subscription', endpoint, payload);
+        const result = await ctx.connection.rpc.call('/api', 'chatgpt-subscription.' + endpoint, payload);
         if (!result.ok) throw new Error(result.error.message);
         return result.value;
       };
