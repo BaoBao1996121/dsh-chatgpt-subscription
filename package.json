@@ -1,0 +1,19 @@
+{
+  "name": "dsh-chatgpt-subscription",
+  "version": "0.1.2",
+  "description": "DSH desktop ChatGPT subscription sign-in and OpenAI network settings",
+  "type": "module",
+  "main": "./index.js",
+  "exports": { ".": "./index.js", "./client": "./client.js", "./package.json": "./package.json" },
+  "files": ["index.js", "network.js", "client.js", "cordis.patch.yml", "README.md", "LICENSE"],
+  "keywords": ["dsh", "dsh-plugin", "chatgpt", "codex", "openai", "clash"],
+  "license": "MIT",
+  "repository": { "type": "git", "url": "git+https://github.com/BaoBao1996121/dsh-chatgpt-subscription.git" },
+  "homepage": "https://github.com/BaoBao1996121/dsh-chatgpt-subscription#readme",
+  "bugs": { "url": "https://github.com/BaoBao1996121/dsh-chatgpt-subscription/issues" },
+  "scripts": { "test": "node --test tests/*.test.js" },
+  "devDependencies": { "@deepseek-ai/cordis": "~4.0.4" },
+  "engines": { "node": ">=22.19.0" },
+  "dsh": { "bundle": { "patch": "./cordis.patch.yml" }, "client": { "inject": ["@deepseek-ai/dsh-client-ui-settings", "@deepseek-ai/dsh-client-connection"], "platform": "web" } },
+  "dependencies": { "@deepseek-ai/schemastery": "~3.18.4", "undici": "8.11.2" }
+}

@@ -1,0 +1,6 @@
+- insert:
+    - id: chatgpt-subscription
+      name: dsh-chatgpt-subscription
+      config:
+        mode: clash
+        proxyUrl: http://127.0.0.1:21158
